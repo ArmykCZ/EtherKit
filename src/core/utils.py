@@ -20,8 +20,10 @@ def clear_terminal():
         subprocess.run('clear', shell=True)
 
 def timestamp():
-    hour = datetime.datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
+    #windows does not support ":" in file names, so we use "-" instead
+    hour = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     print(hour)
+    return hour
 
 
 def create_directory():
@@ -51,16 +53,37 @@ def create_directory():
         json_file.touch()
 
 
-def save_json(data,path):
-    """
-    Uložení výsledků
-    """
+#data func
+def save_json():
+    test_data = [
+    {
+        "ssid": "Skola_Wifi_Free",
+        "bssid": "00:11:22:33:44:55",
+        "signal": -65,
+        "encryption": "WPA2"
+    },
+    {
+        "ssid": "Tajny_Urad_VPN",
+        "bssid": "AA:BB:CC:DD:EE:FF",
+        "signal": -82,
+        "encryption": "WPA3"
+    }
+]
 
 
-def load_json(path):
-    """
-    Načtení výsledků
-    """
+
+    file = Path.cwd() / "logs" / "test.json"
+    with open(file, "w") as f:
+        json.dump(test_data, f, indent=4)
+
+
+
+def load_json():
+    file = Path.cwd() /"logs" / "test.json"
+    with open(file, "r") as f:
+        data = json.load(f)
+        print(data)
+        return data
 
 
 def check_dependencies():
@@ -77,3 +100,5 @@ if __name__ == "__main__":
     clear_terminal()
     timestamp()
     create_directory()
+    save_json()
+    load_json()
