@@ -1,0 +1,14 @@
+[
+    {
+        "ssid": "Skola_Wifi_Free",
+        "bssid": "00:11:22:33:44:55",
+        "signal": -65,
+        "encryption": "WPA2"
+    },
+    {
+        "ssid": "Tajny_Urad_VPN",
+        "bssid": "AA:BB:CC:DD:EE:FF",
+        "signal": -82,
+        "encryption": "WPA3"
+    }
+]

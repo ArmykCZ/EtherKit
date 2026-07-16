@@ -3,8 +3,7 @@ import time
 import json
 import datetime
 from pathlib import Path
-import sys 
-import subprocess
+import sys, subprocess
 
 # TODO:
 # - jednotný error handler
@@ -24,34 +23,6 @@ def timestamp():
     hour = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     print(hour)
     return hour
-
-
-def create_directory():
-    #test file
-    file = (Path.cwd() / "logs" / "test.txt")
-    json_file = (Path.cwd() / "logs" / "test.json")
-
-    #the / automatically take it as a root directory
-    #Path.cwd() gives the current working directory
-    directory = (Path.cwd() / "logs").resolve() 
-    if directory.exists() and directory.is_dir():
-        print("Directory exists")
-        if file.exists() and file.is_file():
-            print("file exists")
-        else:
-            print("file doesnt exist, creating file")
-            file.touch()
-        if json_file.exists() and json_file.is_file():
-            print("JSON file exists")
-        else:
-            print("JSON file doesnt exist, creating file")
-            json_file.touch()
-    else:
-        print("path doesnt exist, creating directory and files")
-        directory.mkdir(parents=True, exist_ok=True)
-        file.touch()
-        json_file.touch()
-
 
 #data func
 def save_json():
@@ -87,9 +58,34 @@ def load_json():
 
 
 def check_dependencies():
-    """
-    Kontrola potřebných programů
-    """
+    directories = [
+        "docs",
+        "captures",
+        "logs",
+    ]
+
+    logs_files = [
+        "test.txt",
+        "test.json",
+    ]
+
+    for directory in directories:
+        directory = Path.cwd() / directory
+        if directory.exists() and directory.is_dir():
+            print(f"Directory {directory} exists")
+        else:
+            print(f"Directory {directory} does not exist, creating it")
+            directory.mkdir(parents=True, exist_ok=True)
+    
+    for file in logs_files:
+        file = Path.cwd() / "logs" / file
+        if file.exists() and file.is_file():
+            print(f"File {file} exists")
+        else:
+            print(f"File {file} does not exist, creating it")
+            file.touch()
+    
+
 
 
 
@@ -97,8 +93,8 @@ def check_dependencies():
 
 if __name__ == "__main__":
     # Testování funkcí
-    clear_terminal()
+    clear_terminal() 
+    check_dependencies()
     timestamp()
-    create_directory()
     save_json()
     load_json()
