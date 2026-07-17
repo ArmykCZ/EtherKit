@@ -1,3 +1,5 @@
+import scapy
+
 # TODO:
 # - stav modulu
 # - logování
@@ -5,12 +7,20 @@
 
 
 class FakeAPModule:
+    def __init__(self):
+        self.state = "stopped"
+        self.ap_ssid = []
+
+    def configure(self):
+        self.ap_ssid = ["FakeAP", "EvilTwin", "FreeWiFi"]
+        print(f"Konfigurace načtena. SSID: {self.ap_ssid}")
 
 
-    def configure():
+    def start(self):
+        ...
 
-    def start():
+    def stop(self):
+        ...
 
-    def stop():
-
-    def status():
+    def status(self):
+        ...
