@@ -1,6 +1,8 @@
 import argparse
 from core.scanner import WifiScanner
 from core.utils import *
+from core.utils import check_utils
+from attacks.fake_ap import FakeAPModule
 
 
 # TODO:
@@ -30,8 +32,16 @@ def load_modules():
     """
     Načte dostupné moduly
     """
-
-
+def fake_ap_setting():
+    networks_dict =  {
+        "Fake_AP": None,
+        "Evil_Twin": 12345,
+        "FreeWiFi": "Password123",
+        "Open_Network": None
+    }
+    attack = FakeAPModule()
+    attack.configure(networks_dict)
+    
 
 import argparse
 

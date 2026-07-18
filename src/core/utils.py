@@ -11,7 +11,6 @@ import sys, subprocess
 # - config loader
 
 
-
 def clear_terminal():
     if sys.platform.startswith('win'):
         subprocess.run('cls', shell=True)
@@ -86,7 +85,13 @@ def check_dependencies():
             file.touch()
     
 
-
+def check_utils():
+    clear_terminal() 
+    check_dependencies()
+    timestamp()
+    save_json()
+    load_json()
+    print("All utility functions are working correctly.")
 
 
 
