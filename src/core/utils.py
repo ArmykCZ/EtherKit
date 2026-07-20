@@ -98,8 +98,4 @@ def check_utils():
 
 if __name__ == "__main__":
     # Testování funkcí
-    clear_terminal() 
-    check_dependencies()
-    timestamp()
-    save_json()
-    load_json()
+    check_utils()

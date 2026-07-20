@@ -40,8 +40,12 @@ def fake_ap_setting():
         "Open_Network": None
     }
     attack = FakeAPModule()
-    attack.configure(networks_dict)
-    
+    attack.configure(networks_dict, interface="wlan0")
+
+    try:
+        attack.start()
+    finally:
+        attack.stop()
 
 import argparse
 
