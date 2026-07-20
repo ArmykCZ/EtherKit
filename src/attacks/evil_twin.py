@@ -8,9 +8,13 @@ class EvilTwinModule:
 
 
     def setup():
+        ...
 
     def monitor():
+        ...
 
     def report():
+        ...
 
     def cleanup():
+        ...
