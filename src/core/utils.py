@@ -11,11 +11,13 @@ import sys, subprocess
 # - config loader
 
 
-def clear_terminal():
-    if sys.platform.startswith('win'):
-        subprocess.run('cls', shell=True)
-    else:
-        subprocess.run('clear', shell=True)
+def check_platform():
+        if sys.platform.startswith('win'):
+            print("Program is not supported on Windows. Please use Linux.")
+            sys.exit(1) #bruh
+        else:
+            subprocess.run('clear', shell=True)
+    
 
 def timestamp():
     #windows does not support ":" in file names, so we use "-" instead
@@ -86,7 +88,7 @@ def check_dependencies():
     
 
 def check_utils():
-    clear_terminal() 
+    check_platform()
     check_dependencies()
     timestamp()
     save_json()
