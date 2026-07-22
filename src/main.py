@@ -1,60 +1,41 @@
+# main.py
 import argparse
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent / "core"))
+
 from core.scanner import WifiScanner
-from core.utils import *
-from core.utils import check_utils
-from attacks.fake_ap import FakeAPModule
+from core.utils import check_dependencies, clear_terminal
 
 
-# TODO:
-# - vytvořit CLI argumenty
-# - přidat --interface
-# - přidat --scan
-# - přidat --report
-# - přidat verbose mód
+def main():
+    parser = argparse.ArgumentParser(description="EtherKit - Network Security Toolkit")
+    parser.add_argument(
+        "-m", "--monitor",
+        type=str,
+        required=True,
+        help="Network interface in monitor mode (e.g., wlan1)"
+    )
+    
+    args = parser.parse_args()
+    
+    clear_terminal()
+    check_dependencies()
+    
 
-
-def banner():
-    """
-    ASCII logo EtherKit
-    """
-
-def parse_arguments():
-    """
-    CLI argumenty
-    """
-
-def main_menu():
-    """
-    Hlavní menu programu
-    """
-
-def load_modules():
-    """
-    Načte dostupné moduly
-    """
-def fake_ap_setting():
-    networks_dict =  {
-        "Fake_AP": None,
-        "Evil_Twin": 12345,
-        "FreeWiFi": "Password123",
-        "Open_Network": None
-    }
-    attack = FakeAPModule()
-    attack.configure(networks_dict, interface="wlan0")
-
+    
+    scanner = WifiScanner(interface=args.monitor)
+    
+    print(f"[*] Initializing scan on interface: {args.monitor}")
+    
     try:
-        attack.start()
-    finally:
-        attack.stop()
+        scanner.scan_networks()
+        scanner.display_networks()
+        scanner.export_scan()
+    except KeyboardInterrupt:
+        print("\n[!] Scan interrupted by user.")
 
-import argparse
 
-# 1. Vytvoření parseru
-parser = argparse.ArgumentParser(description="Můj skript")
-
-# 2. Přidání parametru
-parser.add_argument("jmeno", help="Zadej své jméno")
-
-# 3. Zpracování a vypsání
-args = parser.parse_args()
-print(f"Ahoj, {args.jmeno}!")
+if __name__ == "__main__":
+    main()

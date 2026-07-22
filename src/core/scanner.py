@@ -5,15 +5,6 @@ from rich.console import Console
 from rich.table import Table
 from scapy.all import sniff, Dot11, Dot11Elt, RadioTap
 
-# from core.utils import some_utility_function
-
-# TODO:
-# - vytvořit datový model Network
-# - přidat filtrování
-# - přidat řazení podle signálu
-# - přidat export JSON
-
-
 @dataclass
 class Network:
     ssid: str
@@ -26,8 +17,8 @@ class WifiScanner:
     def __init__(self, interface: str, timeout: int = 15):
         self.interface = interface
         self.timeout = timeout
-        self.networks = []
-
+        self.networks = {}
+        self.console = Console()
 
     def packet_handler(self, packet):
         if not packet.haslayer(Dot11):
@@ -65,61 +56,61 @@ class WifiScanner:
                         encryption = "WPA"
                 p = p.payload
 
-                if encryption == "OPEN" and packet.startswith("{Dot11Beacon:%Dot11Beacon.cap%}").find("privacy") > 0:
-                    encryption = "WEP"
+            if encryption == "OPEN" and packet.sprintf("{Dot11Beacon:%Dot11Beacon.cap%}").find("privacy") > 0:
+                encryption = "WEP"
 
-                signal = -100
-                if packet.haslayer(RadioTap) and hasattr(packet[RadioTap], "dBm_AntSignal"):
-                    signal = int(packet[RadioTap].dBm_AntSignal)
+            signal = -100
+            if packet.haslayer(RadioTap) and hasattr(packet[RadioTap], "dBm_AntSignal"):
+                signal = int(packet[RadioTap].dBm_AntSignal)
 
-                self.networks[bssid] = Network(
-                    ssid=ssid,
-                    bssid=bssid,
-                    channel=channel,
-                    encryption=encryption,
-                    signal=signal
-                )
+            self.networks[bssid] = Network(
+                ssid=ssid,
+                bssid=bssid,
+                channel=channel,
+                encryption=encryption,
+                signal=signal
+            )
 
-                def scan_networks(self):
-                    self.networks.clear()
+    def scan_networks(self):
+        self.networks.clear()
         
-                    with self.console.status(f"[bold green]Scanning on {self.interface} for {self.timeout}s...", spinner="dots"):
-                         sniff(iface=self.interface, prn=self.packet_handler, timeout=self.timeout, store=False)
+        with self.console.status(f"[bold green]Scanning on {self.interface} for {self.timeout}s...", spinner="dots"):
+            sniff(iface=self.interface, prn=self.packet_handler, timeout=self.timeout, store=False)
 
-                    sorted_networks = sorted(self.networks.values(), key=lambda x: x.signal, reverse=True)
-                    return sorted_networks
+        sorted_networks = sorted(self.networks.values(), key=lambda x: x.signal, reverse=True)
+        return sorted_networks
 
-                def display_networks(self):
-                    sorted_networks = sorted(self.networks.values(), key=lambda x: x.signal, reverse=True)
+    def display_networks(self):
+        sorted_networks = sorted(self.networks.values(), key=lambda x: x.signal, reverse=True)
 
-                    if not sorted_networks:
-                        self.console.print(f"[red]No networks found on {self.interface}. Make sure the interface is in monitor mode.[/red]")
-                        return
+        if not sorted_networks:
+            self.console.print(f"[red]No networks found on {self.interface}. Make sure the interface is in monitor mode.[/red]")
+            return
 
-                    table = Table(title="WiFi Scan Results")
-                    table.add_column("ID", justify="right", style="cyan", no_wrap=True)
-                    table.add_column("SSID", style="magenta")
-                    table.add_column("BSSID", style="green")
-                    table.add_column("CH", justify="right")
-                    table.add_column("ENC", justify="left")
-                    table.add_column("PWR", justify="right")
+        table = Table(title="WiFi Scan Results")
+        table.add_column("ID", justify="right", style="cyan", no_wrap=True)
+        table.add_column("SSID", style="magenta")
+        table.add_column("BSSID", style="green")
+        table.add_column("CH", justify="right")
+        table.add_column("ENC", justify="left")
+        table.add_column("PWR", justify="right")
 
-                    for idx, network in enumerate(sorted_networks, start=1):
-                        table.add_row(
-                            str(idx),
-                            network.ssid,
-                            network.bssid,
-                            str(network.channel),
-                            network.encryption,
-                            str(network.signal)
-                        )
+        for idx, network in enumerate(sorted_networks, start=1):
+            table.add_row(
+                str(idx),
+                network.ssid,
+                network.bssid,
+                str(network.channel),
+                network.encryption,
+                str(network.signal)
+            )
 
-                    self.console.print(table)
+        self.console.print(table)
 
-                def export_scan(self, filename="scan_results.json"):
-                    if not self.networks:
-                        return
+    def export_scan(self, filename="scan_results.json"):
+        if not self.networks:
+            return
 
-                    sorted_networks = sorted(self.networks.values(), key=lambda x: x.signal, reverse=True)
-                    with open(filename, "w") as f:
-                        json.dump([asdict(net) for net in sorted_networks], f, indent=4)
+        sorted_networks = sorted(self.networks.values(), key=lambda x: x.signal, reverse=True)
+        with open(filename, "w") as f:
+            json.dump([asdict(net) for net in sorted_networks], f, indent=4)
