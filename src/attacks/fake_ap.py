@@ -1,5 +1,5 @@
 import time
-from scapy.all import RadioTap, Dot11, Dot11Beacon, Dot11Elt, sendp
+from scapy.all import RadioTap, Dot11, Dot11Beacon, Dot11Elt, sendp, RandMac
 import sys, subprocess
 
 # TODO:
@@ -12,10 +12,13 @@ class FakeAPModule:
     def __init__(self):
         self.state = "STOPPED"
         self.ap_ssid = {}
-
-    def configure(self, networks_dict):
-        self.ap_ssid = networks_dict
         self.interface = "wlan0"
+        self.ap_macs = {}
+
+    def configure(self, networks_dict, interface="wlan0"):
+        self.ap_ssid = networks_dict
+        self.interface = interface
+        self.ap_macs = {ssid: str(RandMac()) for ssid in networks_dict}
 
     def start(self):
         self.state = "RUNNING"
@@ -32,21 +35,22 @@ class FakeAPModule:
             print("Make sure the interface is correct and you started the script with root privileges.")
             return
 
-
-        mac_adress = "00:11:22:33:44:55"
-
         try:
             while self.state == "RUNNING":
                 for ssid, password in self.ap_ssid.items():
                     if password is None:
+                        mac_address = self.ap_macs[ssid]
+
                         packet = (RadioTap() / 
-                                Dot11(type=0, subtype=8, addr1="ff:ff:ff:ff:ff:ff", addr2=mac_adress, addr3=mac_adress) / 
-                                Dot11Beacon() / 
-                                Dot11Elt(ID="SSID", info=ssid))
+                                Dot11(type=0, subtype=8, addr1="ff:ff:ff:ff:ff:ff", addr2=mac_address, addr3=mac_address) / 
+                                Dot11Beacon(cap="ESS") / 
+                                Dot11Elt(ID="SSID", info=ssid) /
+                                Dot11Elt(ID="Rates", info=b"\x82\x84\x8b\x96")/
+                                Dot11Elt(ID="DSset", info=b"\x06"))
                         
                         sendp(packet, iface=self.interface, count=1, verbose=False)
 
-                time.sleep(0.5)
+                time.sleep(0.1)
 
         except KeyboardInterrupt:
             print("\n[!] Turning off fake APs...")
@@ -78,5 +82,5 @@ class FakeAPModule:
 
 if __name__ == "__main__":
     fake_ap = FakeAPModule()
-    fake_ap.configure({"FakeNetwork1": None, "FakeNetwork2": None, "SkibidyRizzler": None})
+    fake_ap.configure({"FakeNetwork1": None, "FakeNetwork2": None, "SkibidyRizzler": None}, interface="wlan0")
     fake_ap.start()
