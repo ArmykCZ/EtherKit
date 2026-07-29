@@ -5,8 +5,8 @@ from pathlib import Path
 # Přidání adresáře 'core' do sys.path pro čisté importy
 sys.path.append(str(Path(__file__).resolve().parent / "core"))
 
-from scanner import WifiScanner
-from utils import check_dependencies, check_platform
+from core.scanner import WifiScanner
+from core.utils import check_dependencies, check_platform
 
 
 def main():
