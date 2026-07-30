@@ -58,10 +58,8 @@ class FakeAPModule:
 
         except KeyboardInterrupt:
             print("\n[!] Turning off fake APs...")
-            self.stop()
         except Exception:
             print("\n[!] An error occurred. Stopping the module...")
-            self.stop()
         finally:
             self.stop()
 
