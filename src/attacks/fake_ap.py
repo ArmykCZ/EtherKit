@@ -7,12 +7,6 @@ from core.monitor_mode import *
 # - logování
 # - cleanup po ukončení
 
-# airmon-ng check kill
-
-# airmon-ng start wlan0
-# airmon-ng stop wlan0
-#sudo systemctl start NetworkManager
-
 class FakeAPModule:
     def __init__(self):
         self.state = "STOPPED"
@@ -21,11 +15,13 @@ class FakeAPModule:
         self.ap_macs = {}
         self.channel = 6
 
+
     def configure(self, networks_dict, interface="wlan0", channel=6):
         self.ap_ssid = networks_dict
         self.interface = interface
         self.channel = channel
         self.ap_macs = {ssid: str(RandMac()) for ssid in networks_dict}
+
 
     def start(self):
         self.state = "RUNNING"
@@ -63,14 +59,13 @@ class FakeAPModule:
         finally:
             self.stop()
 
+
     def stop(self):
         if self.state == "STOPPED":
             print("Modul is already stopped.")
             return
         self.state = "STOPPED"
         self.monitor.disable()
-
-
 
 
     def status(self):

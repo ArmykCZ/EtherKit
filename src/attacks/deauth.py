@@ -8,8 +8,6 @@ from core.mac_vendors import get_vendor
 # - přidat audit log
 # - přidat časový limit
 # - přidat ochranu proti omylu - jak proti omylu? tady není místo na omyl XD
-
-
 class DeauthModule:
     def __init__(self):
         self.target_mac = "ff:ff:ff:ff:ff:ff"
@@ -38,7 +36,6 @@ class DeauthModule:
 
 
         
-
     def start(self):
         if self.state == "RUNNING":
             print("Modul is already running.")
@@ -67,6 +64,7 @@ class DeauthModule:
             print("Deauthentication attack aborted.")
             self.state = "STOPPED"
 
+
     def stop(self):
         if self.state == "STOPPED":
             print("Modul is already stopped.")
@@ -74,12 +72,14 @@ class DeauthModule:
         self.state = "STOPPED"
         self.monitor.disable()
 
+
     def mac_lookup(self):
         ap_vendor = get_vendor(self.ap_mac)
         target_vendor = get_vendor(self.target_mac)
         
         print(f"AP MAC:     {self.ap_mac} ({ap_vendor})")
         print(f"Target MAC: {self.target_mac} ({target_vendor})")
+
         
     def start_demo(self):
         print("Starting demo deauthentication attack...")
@@ -99,6 +99,7 @@ class DeauthModule:
             self.state = "STOPPED"
             self.monitor.disable()
             print("Demo deauthentication attack stopped.")
+            
 
 if __name__ == "__main__":
     deauth_module = DeauthModule()
