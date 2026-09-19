@@ -33,9 +33,7 @@ class DeauthModule:
                 print("Deauthentication attack aborted.")
                 return False
         return True
-
-
-        
+    
     def start(self):
         if self.state == "RUNNING":
             print("Modul is already running.")
@@ -80,7 +78,6 @@ class DeauthModule:
         print(f"AP MAC:     {self.ap_mac} ({ap_vendor})")
         print(f"Target MAC: {self.target_mac} ({target_vendor})")
 
-        
     def start_demo(self):
         print("Starting demo deauthentication attack...")
         self.monitor.enable()
@@ -100,9 +97,8 @@ class DeauthModule:
             self.monitor.disable()
             print("Demo deauthentication attack stopped.")
             
-
 if __name__ == "__main__":
     deauth_module = DeauthModule()
+    deauth_module.mac_lookup()
     if deauth_module.select_target(target_mac="AA:BB:CC:DD:EE:FF", ap_mac="AA:BB:CC:DD:EE:FF", interface="wlan0"):
         deauth_module.start()
-        deauth_module.mac_lookup()
